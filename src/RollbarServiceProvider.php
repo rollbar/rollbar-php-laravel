@@ -53,25 +53,35 @@ class RollbarServiceProvider extends ServiceProvider
         $app = $this->app;
 
         $this->app->singleton('Rollbar\RollbarLogger', function ($app) {
-            
+
             $defaults = [
                 'environment'  => $app->environment(),
                 'root'         => base_path(),
             ];
             $config = array_merge($defaults, $app['config']->get('services.rollbar', []));
             $config['access_token'] = getenv('ROLLBAR_TOKEN') ?: $app['config']->get('services.rollbar.access_token');
-            
+
+            if (isset($config['person_fn'])) {
+                $person_fn = $config['person_fn'];
+                $config['person_fn'] = function () use ($person_fn, $app) {
+                    $person = call_user_func($person_fn) ?: [];
+                    return $this->app->session->isStarted()
+                        ? $app['Rollbar\Laravel\RollbarLogHandler']->extendPersonWithSession($person)
+                        : $person;
+                };
+            }
+
             if (empty($config['access_token'])) {
                 throw new InvalidArgumentException('Rollbar access token not configured');
             }
-            
+
             \Rollbar\Rollbar::init($config);
-            
+
             return Rollbar::logger();
         });
 
         $this->app->singleton('Rollbar\Laravel\RollbarLogHandler', function ($app) {
-            
+
             $level = getenv('ROLLBAR_LEVEL') ?: $app['config']->get('services.rollbar.level', 'debug');
 
             return new RollbarLogHandler($app['Rollbar\RollbarLogger'], $app, $level);
