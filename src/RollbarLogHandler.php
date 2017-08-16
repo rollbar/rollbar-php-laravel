@@ -95,15 +95,19 @@ class RollbarLogHandler extends AbstractLogger
 
             // Add user session information.
             $config = $this->logger->extend([]);
-            $person = isset($config['person']) ? $config['person'] : [];
             
-            $person['session'] = isset($person['session']) ?
-                array_merge($session, $person['session']) :
-                $person['session'] = $session;
+            // replaced array with null because the "person_fn" Rollbar doesn't work
+            $person = isset($config['person']) ? $config['person'] : null;
+            
+            if( $person ) {
+                $person['session'] = isset($person['session']) ?
+                    array_merge($session, $person['session']) :
+                    $person['session'] = $session;
 
-            // User session id as user id if not set.
-            if (! isset($person['id'])) {
-                $person['id'] = $this->app->session->getId();
+                // User session id as user id if not set.
+                if (! isset($person['id'])) {
+                    $person['id'] = $this->app->session->getId();
+                }
             }
                 
             $this->logger->configure(['person' => $person]);
