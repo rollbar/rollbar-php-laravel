@@ -59,6 +59,20 @@ class RollbarLogHandler extends AbstractLogger
         $this->level = $this->parseLevel($level ?: 'debug');
     }
 
+    public function extendPersonWithSession(array $person)
+    {
+        $person['session'] = isset($person['session'])
+            ? array_merge($this->app->session->all(), $person['session'])
+            : $this->app->session->all();
+
+        // User session id as user id if not set.
+        if (! isset($person['id'])) {
+            $person['id'] = $this->app->session->getId();
+        }
+
+        return $person;
+    }
+
     /**
      * Log a message to Rollbar.
      *
@@ -86,27 +100,21 @@ class RollbarLogHandler extends AbstractLogger
     protected function addContext(array $context = [])
     {
         // Add session data.
-        if ($session = $this->app->session->all()) {
+        if ($this->app->session->isStarted()) {
             // Merge person context.
             if (isset($context['person']) and is_array($context['person'])) {
-                $this->logger->configure(['person' => $context['person']]);
+                $person = $context['person'];
                 unset($context['person']);
+            } else {
+                // Add user session information.
+                $config = $this->logger->extend([]);
+                if (isset($config['person_fn'])) {
+                    return $context;
+                }
+                $person = isset($config['person']) ? $config['person'] : [];
             }
 
-            // Add user session information.
-            $config = $this->logger->extend([]);
-            $person = isset($config['person']) ? $config['person'] : [];
-            
-            $person['session'] = isset($person['session']) ?
-                array_merge($session, $person['session']) :
-                $person['session'] = $session;
-
-            // User session id as user id if not set.
-            if (! isset($person['id'])) {
-                $person['id'] = $this->app->session->getId();
-            }
-                
-            $this->logger->configure(['person' => $person]);
+            $this->logger->configure(['person' => $this->extendPersonWithSession($person)]);
         }
 
         return $context;
