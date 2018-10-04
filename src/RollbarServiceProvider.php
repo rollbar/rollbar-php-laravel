@@ -28,30 +28,36 @@ class RollbarServiceProvider extends ServiceProvider
 
         // Listen to log messages.
         $app['log']->listen(function () use ($app) {
-            $args = func_get_args();
-
-            // Laravel 5.4 returns a MessageLogged instance only
-            if (count($args) == 1) {
-                $level = $args[0]->level;
-                $message = $args[0]->message;
-                $context = $args[0]->context;
-            } else {
-                $level = $args[0];
-                $message = $args[1];
-                $context = $args[2];
-            }
-
-            if (strpos($message, 'Unable to send messages to Rollbar API. Produced response: ') !== false) {
-                return;
-            }
-
-            $result = $app[RollbarLogHandler::class]->log($level, $message, $context);
             
-            if (!$result || !$result->getStatus()) {
-                \Log::error(
-                    'Unable to send messages to Rollbar API. Produced response: ' .
-                    print_r($result, true)
-                );
+            try {
+                
+                $args = func_get_args();
+    
+                // Laravel 5.4 returns a MessageLogged instance only
+                if (count($args) == 1) {
+                    $level = $args[0]->level;
+                    $message = $args[0]->message;
+                    $context = $args[0]->context;
+                } else {
+                    $level = $args[0];
+                    $message = $args[1];
+                    $context = $args[2];
+                }
+    
+                if (strpos($message, 'Unable to send messages to Rollbar API. Produced response: ') !== false) {
+                    return;
+                }
+    
+                $result = $app[RollbarLogHandler::class]->log($level, $message, $context);
+                
+                if (!$result || !$result->getStatus()) {
+                    \Log::error(
+                        'Unable to send messages to Rollbar API. Produced response: ' .
+                        print_r($result, true)
+                    );
+                }
+            
+            } catch (\Exception $exception) {
             }
         });
     }
