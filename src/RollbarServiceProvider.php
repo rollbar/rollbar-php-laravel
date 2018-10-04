@@ -46,8 +46,8 @@ class RollbarServiceProvider extends ServiceProvider
             }
 
             $result = $app[RollbarLogHandler::class]->log($level, $message, $context);
-
-            if (!$result->getStatus()) {
+            
+            if (!$result || !$result->getStatus()) {
                 \Log::error(
                     'Unable to send messages to Rollbar API. Produced response: ' .
                     print_r($result, true)
