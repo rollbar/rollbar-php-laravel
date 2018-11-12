@@ -70,7 +70,7 @@ class RollbarLogHandler extends AbstractLogger
     {
         // Check if we want to log this message.
         if ($this->parseLevel($level) < $this->level) {
-            return;
+            throw new BelowParseLevelException();
         }
 
         $context = $this->addContext($context);
