@@ -114,7 +114,11 @@ class RollbarTest extends \Orchestra\Testbench\TestCase
         $clientMock = \Mockery::mock('Rollbar\RollbarLogger');
         
         $clientMock->shouldReceive('log')->times(2)->andReturn($responseMock);
-        $clientMock->shouldReceive('log')->times(1)->with('error', $exception, ['foo' => 'bar'])->andReturn($responseMock);
+        $clientMock->
+            shouldReceive('log')->
+            times(1)->
+            with('error', $exception, ['foo' => 'bar'])->
+            andReturn($responseMock);
 
         $handlerMock = \Mockery::mock('Rollbar\Laravel\RollbarLogHandler', [$clientMock, $this->app]);
         
