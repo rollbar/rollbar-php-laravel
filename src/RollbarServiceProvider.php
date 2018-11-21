@@ -30,7 +30,6 @@ class RollbarServiceProvider extends ServiceProvider
         $app['log']->listen(function () use ($app) {
             
             try {
-                
                 $args = func_get_args();
     
                 // Laravel 5.4 returns a MessageLogged instance only
@@ -50,7 +49,7 @@ class RollbarServiceProvider extends ServiceProvider
     
                 try {
                     $result = $app[RollbarLogHandler::class]->log($level, $message, $context);
-                } catch(BelowParseLevelException $exception) {
+                } catch (BelowParseLevelException $exception) {
                     return;
                 }
                 
@@ -60,7 +59,6 @@ class RollbarServiceProvider extends ServiceProvider
                         print_r($result, true)
                     );
                 }
-            
             } catch (\Exception $exception) {
             }
         });
