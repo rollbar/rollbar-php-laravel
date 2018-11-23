@@ -46,9 +46,9 @@ class RollbarServiceProvider extends ServiceProvider
                 if (strpos($message, 'Unable to send messages to Rollbar API. Produced response: ') !== false) {
                     return;
                 }
-    
+        
                 try {
-                    $result = $app[RollbarLogHandler::class]->log($level, $message, $context);
+                    $result = $app["Rollbar\Laravel\RollbarLogHandler"]->log($level, $message, $context);
                 } catch (BelowParseLevelException $exception) {
                     return;
                 }
