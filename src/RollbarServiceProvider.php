@@ -48,7 +48,7 @@ class RollbarServiceProvider extends ServiceProvider
                 }
     
                 try {
-                    $result = $app[get_class(RollbarLogHandler)]->log($level, $message, $context);
+                    $result = $app[RollbarLogHandler::class]->log($level, $message, $context);
                 } catch (BelowParseLevelException $exception) {
                     return;
                 }
