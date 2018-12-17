@@ -53,7 +53,7 @@ class RollbarServiceProvider extends ServiceProvider
                     return;
                 }
                 
-                if (!$result || !$result->getStatus()) {
+                if (!$result || $result->getStatus() >= 400) {
                     \Log::error(
                         'Unable to send messages to Rollbar API. Produced response: ' .
                         print_r($result, true)
