@@ -2,7 +2,7 @@
 
 namespace Rollbar\Laravel;
 
-use Monolog\Handler\RollbarHandler;
+use Rollbar\Monolog\Handler\RollbarHandler;
 
 class MonologHandler extends RollbarHandler
 {
