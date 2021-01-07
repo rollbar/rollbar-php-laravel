@@ -44,6 +44,11 @@ class MonologHandler extends RollbarHandler
                 if (is_object($data)) {
                     if (isset($data->id)) {
                         $person['id'] = $data->id;
+                    } elseif (method_exists($data, 'getKey')) {
+                        $person['id'] = $data->getKey();
+                    }
+                    
+                    if (isset($person['id'])) {
                         if (isset($data->username)) {
                             $person['username'] = $data->username;
                         }
