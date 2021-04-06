@@ -59,7 +59,7 @@ class MonologHandler extends RollbarHandler
         }
 
         // Add session data.
-        if ($session = $this->app->session->all()) {
+        if ($this->app->has('session') && $session = $this->app->session->all()) {
             // Add user session information.
             if (isset($person['session'])) {
                 $person['session'] = array_merge($session, $person['session']);
