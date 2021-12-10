@@ -1,0 +1,159 @@
+# Primary CI checks for Rollbar-PHP-Laravel.
+# We're checking that logging within Laravel passes through the Rollbar Laravel
+# integration when that integration is properly installed. We make this check
+# for all supported combinations of Laravel, Rollbar, and PHP. We are not
+# checking that messages are properly sent to Rollbar: that's handled by
+# rollbar-php.
+#
+# Test with act:
+#   brew install act
+#   act -P ubuntu-latest=shivammathur/node:latest
+#
+# @see https://github.com/nektos/act/issues/329
+name: Rollbar-PHP-Laravel CI for Lumen
+
+# Fire this action on pushes to main branch (master) as well as other branches
+# or pull requests. Also, run every day at 02:42 GMT -- this catches failures
+# from dependencies that update independently.
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '42 2 * * *'
+
+jobs:
+  # Check that this runs on all combinations of Laravel we claim to support.
+  laravel-tests:
+    strategy:
+      matrix:
+        os: [ubuntu]
+        php: [7.4]
+        lumen: [^8]
+        rollbar-php-laravel: [^7]
+        #base#php: [7.4, 7.3, 7.2, 7.1]
+        #base#laravel: [^8, ^7, ^6, ^5.8, ^5.7, ^5.6]
+        #base#rollbar-php-laravel: [^7, 4.*]
+        #fails#php: [7.0]
+        #fails#laravel: [^5.5]
+        #fails#rollbar-php-laravel: [2.*]
+        #todo#exclude:
+    env:
+      ROLLBAR_TOKEN: "ad865e76e7fb496fab096ac07b1dbabb"
+    name: Lumen ${{ matrix.lumen }}/Rollbar ${{ matrix.rollbar-php-laravel }}/PHP ${{ matrix.php }}(${{ matrix.os }})
+    runs-on: ${{ matrix.os }}-latest
+    steps:
+      # Note: this step is currently unused, because we are installing Rollbar
+      # Note: from Packagist 3 steps later. This was done to prove out currently
+      # Note: working combinations from published versions. The next iteration
+      # Note: will move the CI to use the correct branch, so that pre-published
+      # Note: code will be tested. See the #local# comment a few steps down for
+      # Note: proper incorporation.
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Install PHP and composer environment
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: curl
+
+      - name: Create Lumen test app
+        run: composer create-project laravel/lumen rollbar-test-app ${{ matrix.lumen }}
+
+      - name: Install rollbar-php-laravel package
+        working-directory: rollbar-test-app
+        run: |
+          composer require rollbar/rollbar-laravel ${{ matrix.rollbar-php-laravel }}
+          #local#composer config repositories.local '{"type":"path", "url":".."}'
+          #local#composer -vvvv require rollbar/rollbar-laravel
+
+          echo "ROLLBAR_TOKEN=${ROLLBAR_TOKEN}" >> .env
+          echo "GITHUB_RUN_ID=${GITHUB_RUN_ID}" >> .env
+          chmod 400 .env
+
+      - name: Configure Lumen to use Rollbar and configure Rollbar to invoke logging callback
+        working-directory: rollbar-test-app
+        run: |
+          > bootstrap/app.php echo '<?php
+            require_once __DIR__."/../vendor/autoload.php";
+
+            (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(dirname(__DIR__)))->bootstrap();
+
+            date_default_timezone_set(env("APP_TIMEZONE", "UTC"));
+
+            $app = new Laravel\Lumen\Application(dirname(__DIR__));
+            $app->withFacades();
+            $app->singleton(Illuminate\Contracts\Debug\ExceptionHandler::class, App\Exceptions\Handler::class);
+            $app->singleton(Illuminate\Contracts\Console\Kernel::class, App\Console\Kernel::class);
+            $app->configure("app");
+
+            $app->register(\Rollbar\Laravel\RollbarServiceProvider::class);
+            $app->configure("logging");
+
+            $app->router->group(["namespace" => "App\Http\Controllers"], function ($router) {
+                require __DIR__."/../routes/web.php";
+            });
+
+            return $app;
+          '
+          mkdir config
+          > config/logging.php echo '<?php return array (
+              "default" => "rollbar",
+              "channels" => array (
+                "rollbar" => array (
+                  "driver" => "monolog",
+                  "handler" => \Rollbar\Laravel\MonologHandler::class,
+                  "access_token" => env("ROLLBAR_TOKEN"),
+                  "level" => "debug",
+                  // use the check_ignore filter to capture log messages for verification
+                  "check_ignore" => "check_ignore",
+                )
+              )
+            );
+          '
+          touch app/helpers.php
+          > tmp-composer.json jq '.autoload += { "files": [ "app/helpers.php" ] }' composer.json
+          mv tmp-composer.json composer.json
+          composer dump-autoload
+
+      - name: Define logging callback that invokes when Laravel logs through Rollbar
+        working-directory: rollbar-test-app
+        run: |
+          > app/helpers.php echo '<?php
+            function temp_file() {
+              return env("RUNNER_TEMP") . DIRECTORY_SEPARATOR . env("GITHUB_RUN_ID") . ".tmp.txt";
+            }
+            function check_ignore($isUncaught, $toLog, $payload) {
+              // write log message to a file for inspection
+              $ok = file_put_contents(temp_file(), (string)$toLog);
+              // return indication that the log should be dropped
+              return true;
+            }
+          '
+
+      - name: Define Lumen tests to exercise and verify logging
+        working-directory: rollbar-test-app
+        run: |
+          > tests/LoggingTest.php echo '<?php
+            class LoggingTest extends \TestCase {
+              public function test_log_call_invokes_rollbar_check_ignore()
+              {
+                // generate a random valued log message to check it is passed through the
+                // Laravel logging mechanism into Rollbar
+                $value = sprintf("%s-%s", env("GITHUB_RUN_ID"), rand());
+
+                \Log::error($value);
+
+                // check that we have our random value written into our local file
+                $this->assertFileExists(temp_file(),
+                  "Rollbar check_ignore handler not invoked, suggesting an issue integrating Rollbar into Laravel.");
+                $this->assertSame($value, file_get_contents(temp_file()),
+                  "check_ignore file did not contain expected value, suggesting file left by another process.");
+              }
+            }
+          '
+
+      - name: Invoke the Laravel test suite
+        working-directory: rollbar-test-app
+        run: |
+          ./vendor/bin/phpunit
