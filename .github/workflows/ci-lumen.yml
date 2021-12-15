@@ -27,12 +27,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu]
-        php: [7.4]
-        lumen: [^8]
-        rollbar-php-laravel: [^7]
-        #base#php: [7.4, 7.3, 7.2, 7.1]
-        #base#laravel: [^8, ^7, ^6, ^5.8, ^5.7, ^5.6]
-        #base#rollbar-php-laravel: [^7, 4.*]
+        #php: [7.4]
+        #lumen: [^8]
+        #rollbar-php-laravel: [^7]
+        php: [7.4, 7.3, 7.2, 7.1]
+        lumen: [^8, ^7, ^6, ^5.8, ^5.7, ^5.6]
+        rollbar-php-laravel: [^7, 4.*]
         #fails#php: [7.0]
         #fails#laravel: [^5.5]
         #fails#rollbar-php-laravel: [2.*]
@@ -63,7 +63,6 @@ jobs:
       - name: Install rollbar-php-laravel package
         working-directory: rollbar-test-app
         run: |
-          composer require rollbar/rollbar-laravel ${{ matrix.rollbar-php-laravel }}
           #local#composer config repositories.local '{"type":"path", "url":".."}'
           #local#composer -vvvv require rollbar/rollbar-laravel
 
