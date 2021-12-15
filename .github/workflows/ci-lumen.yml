@@ -31,59 +31,59 @@ jobs:
         lumen: [^8, ^7, ^6, ^5.8, ^5.7, ^5.6]
         rollbar-php-laravel: [^7, 4.*]
         exclude:
-          # Laravel 8 requires php 7.3+, so exclude all PHP versions prior to 7.3
-          - laravel: ^8
+          # Lumen 8 requires php 7.3+, so exclude all PHP versions prior to 7.3
+          - lumen: ^8
             php: 7.2
-          - laravel: ^8
+          - lumen: ^8
             php: 7.1
-          - laravel: ^8
+          - lumen: ^8
             php: 7.0
-          # Laravel 7 and 6 requires php 7.2+, so exclude all PHP versions prior to 7.2
-          - laravel: ^7
+          # Lumen 7 and 6 requires php 7.2+, so exclude all PHP versions prior to 7.2
+          - lumen: ^7
             php: 7.1
-          - laravel: ^7
+          - lumen: ^7
             php: 7.0
-          - laravel: ^6
+          - lumen: ^6
             php: 7.1
-          - laravel: ^6
+          - lumen: ^6
             php: 7.0
-          # Laravel 5.8, 5.7, and 5.6 requires php 7.1.3+, so exclude all PHP versions prior to 7.1.3 for them
-          - laravel: ^5.8
+          # Lumen 5.8, 5.7, and 5.6 requires php 7.1.3+, so exclude all PHP versions prior to 7.1.3 for them
+          - lumen: ^5.8
             php: 7.0
-          - laravel: ^5.7
+          - lumen: ^5.7
             php: 7.0
-          - laravel: ^5.6
+          - lumen: ^5.6
             php: 7.0
-          # Laravel 6+ use rollbar-php-laravel latest, so exclude all below 7
-          - laravel: ^6
+          # Lumen 6+ use rollbar-php-laravel latest, so exclude all below 7
+          - lumen: ^6
             rollbar-php-laravel: 4.*
-          - laravel: ^6
+          - lumen: ^6
             rollbar-php-laravel: 2.*
-          - laravel: ^7
+          - lumen: ^7
             rollbar-php-laravel: 4.*
-          - laravel: ^7
+          - lumen: ^7
             rollbar-php-laravel: 2.*
-          - laravel: ^8
+          - lumen: ^8
             rollbar-php-laravel: 4.*
-          - laravel: ^8
+          - lumen: ^8
             rollbar-php-laravel: 2.*
-          # Laravel 5.6 to 5.8 use rollbar-php-laravel 4.x, so exclude all above that and below that
-          - laravel: ^5.6
+          # Lumen 5.6 to 5.8 use rollbar-php-laravel 4.x, so exclude all above that and below that
+          - lumen: ^5.6
             rollbar-php-laravel: ^7
-          - laravel: ^5.6
+          - lumen: ^5.6
             rollbar-php-laravel: 2.*
-          - laravel: ^5.7
+          - lumen: ^5.7
             rollbar-php-laravel: ^7
-          - laravel: ^5.7
+          - lumen: ^5.7
             rollbar-php-laravel: 2.*
-          - laravel: ^5.8
+          - lumen: ^5.8
             rollbar-php-laravel: ^7
-          - laravel: ^5.8
+          - lumen: ^5.8
             rollbar-php-laravel: 2.*
-          # Laravel 5.5 and below use rollbar-php-laravel 2.x, so exclude all above that
-          - laravel: ^5.5
+          # Lumen 5.5 and below use rollbar-php-laravel 2.x, so exclude all above that
+          - lumen: ^5.5
             rollbar-php-laravel: ^7
-          - laravel: ^5.5
+          - lumen: ^5.5
             rollbar-php-laravel: 4.*
     env:
       ROLLBAR_TOKEN: "ad865e76e7fb496fab096ac07b1dbabb"
