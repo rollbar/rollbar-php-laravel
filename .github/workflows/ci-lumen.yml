@@ -116,7 +116,7 @@ jobs:
           mv tmp-composer.json composer.json
           composer dump-autoload
 
-      - name: Define logging callback that invokes when Laravel logs through Rollbar
+      - name: Define logging callback that invokes when Lumen logs through Rollbar
         working-directory: rollbar-test-app
         run: |
           > app/helpers.php echo '<?php
@@ -139,21 +139,21 @@ jobs:
               public function test_log_call_invokes_rollbar_check_ignore()
               {
                 // generate a random valued log message to check it is passed through the
-                // Laravel logging mechanism into Rollbar
+                // Lumen logging mechanism into Rollbar
                 $value = sprintf("%s-%s", env("GITHUB_RUN_ID"), rand());
 
                 \Log::error($value);
 
                 // check that we have our random value written into our local file
                 $this->assertFileExists(temp_file(),
-                  "Rollbar check_ignore handler not invoked, suggesting an issue integrating Rollbar into Laravel.");
+                  "Rollbar check_ignore handler not invoked, suggesting an issue integrating Rollbar into Lumen.");
                 $this->assertSame($value, file_get_contents(temp_file()),
                   "check_ignore file did not contain expected value, suggesting file left by another process.");
               }
             }
           '
 
-      - name: Invoke the Laravel test suite
+      - name: Invoke the Lumen test suite
         working-directory: rollbar-test-app
         run: |
           ./vendor/bin/phpunit
