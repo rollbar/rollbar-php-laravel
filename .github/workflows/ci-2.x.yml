@@ -10,18 +10,22 @@
 #   act -P ubuntu-latest=shivammathur/node:latest
 #
 # @see https://github.com/nektos/act/issues/329
-name: Rollbar-PHP-Laravel CI, master
+name: Rollbar-PHP-Laravel CI, version 2.x
 
-# Fire this action on pushes to main branch (master) as well as other branches
-# or pull requests, excluding those in the next/ lineage. Also, run every day
-# at 02:42 GMT -- this catches failures from transitive dependencies.
+# Fire this action on pushes to 2.x legacy branches (the official one, as well
+# as development branches within it -- hence the wildcard), and also tags for
+# the legacy lineage. Also, run every day at 02:42 GMT to catch failures from
+# transitive dependencies.
+
 on:
   push:
-    branches-ignore:
-      - next/**
+    branches:
+      - next/2.x/**
+    tags:
+      - v2.*
   pull_request:
-    branches-ignore:
-      - next/**
+    branches:
+      - next/2.x/**
   schedule:
     - cron: '42 2 * * *'
 
@@ -31,12 +35,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu]
-        php: [7.4, 7.3, 7.2]
-        laravel: [^8, ^7, ^6]
-        exclude:
-          # Laravel 8 requires php 7.3+, so exclude all PHP versions prior to 7.3
-          - laravel: ^8
-            php: 7.2
+        php: [7.4, 7.3, 7.2, 7.1, 7.0]
+        laravel: [^5.5]
     env:
       ROLLBAR_TOKEN: "ad865e76e7fb496fab096ac07b1dbabb"
     name: Laravel ${{ matrix.laravel }} on PHP ${{ matrix.php }} (${{ matrix.os }})
