@@ -31,8 +31,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu]
-        php: [8.2, 8.1]
-        laravel: [^10]
+        php: [8.4, 8.3, 8.2, 8.1]
+        laravel: [^11, ^10]
     env:
       ROLLBAR_TOKEN: "ad865e76e7fb496fab096ac07b1dbabb"
     name: Laravel ${{ matrix.laravel }} on PHP ${{ matrix.php }} (${{ matrix.os }})
