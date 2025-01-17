@@ -38,6 +38,11 @@
             "Rollbar\\Laravel\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Rollbar\\Laravel\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
