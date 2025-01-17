@@ -2,31 +2,12 @@
 
 namespace Rollbar\Laravel\Tests;
 
-use Rollbar\Laravel\RollbarServiceProvider;
 use Rollbar\Laravel\MonologHandler;
 use Rollbar\Laravel\AgentHandler;
 use Rollbar\RollbarLogger;
-use Monolog\Logger;
-use Mockery;
 
-class RollbarTest extends \Orchestra\Testbench\TestCase
+class RollbarTest extends TestCase
 {
-    private string $access_token = 'B42nHP04s06ov18Dv8X7VI4nVUs6w04X';
-
-    protected function setUp(): void
-    {
-        putenv('ROLLBAR_TOKEN=' . $this->access_token);
-
-        parent::setUp();
-        
-        Mockery::close();
-    }
-
-    protected function getPackageProviders($app)
-    {
-        return [RollbarServiceProvider::class];
-    }
-
     public function testBinding()
     {
         $client = $this->app->make(RollbarLogger::class);
@@ -55,13 +36,16 @@ class RollbarTest extends \Orchestra\Testbench\TestCase
 
     public function testCustomConfiguration()
     {
-        $this->app->config->set('logging.channels.rollbar.root', '/tmp');
-        $this->app->config->set('logging.channels.rollbar.included_errno', E_ERROR);
-        $this->app->config->set('logging.channels.rollbar.environment', 'staging');
+        $this->refreshApplicationWithConfig([
+            'logging.channels.rollbar.root' => '/tmp',
+            'logging.channels.rollbar.included_errno' => E_ERROR,
+            'logging.channels.rollbar.environment' => 'staging',
+        ]);
 
+        /** @var RollbarLogger $client */
         $client = $this->app->make(RollbarLogger::class);
-        $config = $client->extend([]);
-        
+        $config = $client->getConfig()->getConfigArray();
+
         $this->assertEquals('staging', $config['environment']);
         $this->assertEquals('/tmp', $config['root']);
         $this->assertEquals(E_ERROR, $config['included_errno']);
@@ -69,14 +53,14 @@ class RollbarTest extends \Orchestra\Testbench\TestCase
 
     public function testRollbarAgentConfigurationAdapter()
     {
-        $this->app->config->set('logging.channels.rollbar.handler', AgentHandler::class);
+        $this->refreshApplicationWithConfig(['logging.channels.rollbar.handler' => AgentHandler::class]);
 
         $client = $this->app->make(RollbarLogger::class);
         $config = $client->extend([]);
 
         $this->assertEquals(
             'agent',
-            $config['handler'],
+            $config['handler'] ?? null,
             'AgentHandler given as Laravel logging config handler should be given as "agent" to Rollbar::init'
         );
     }
