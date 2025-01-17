@@ -48,7 +48,7 @@ jobs:
           extensions: curl
 
       - name: Install dependencies
-        run: composer update --prefer-${{ matrix.dependency }} --prefer-dist --no-interaction
+        run: composer update --prefer-dist --no-interaction
 
       - name: Execute Rollbar tests
         run: composer test
