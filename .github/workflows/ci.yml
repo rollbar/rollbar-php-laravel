@@ -33,9 +33,10 @@ jobs:
         os: [ubuntu]
         php: [8.4, 8.3, 8.2, 8.1]
         laravel: [^11, ^10]
-      exclude:
-        - php: 8.1
-          laravel: ^11
+
+        exclude:
+          - php: 8.1
+            laravel: ^11
     env:
       ROLLBAR_TOKEN: "ad865e76e7fb496fab096ac07b1dbabb"
     name: Laravel ${{ matrix.laravel }} on PHP ${{ matrix.php }} (${{ matrix.os }})
