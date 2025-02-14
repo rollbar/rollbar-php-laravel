@@ -32,13 +32,13 @@ jobs:
       matrix:
         os: [ubuntu]
         php: [8.4, 8.3, 8.2, 8.1]
-        laravel: [12.*, 11.*, 10.*]
+        laravel: [12.x, 11.x, 10.x]
 
         exclude:
           - php: 8.1
-            laravel: 12.*
+            laravel: 12.x
           - php: 8.1
-            laravel: 11.*
+            laravel: 11.x
             
     env:
       ROLLBAR_TOKEN: "ad865e76e7fb496fab096ac07b1dbabb"
