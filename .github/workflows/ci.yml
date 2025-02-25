@@ -54,6 +54,12 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: curl
 
+      - name: Install dependencies
+        run: composer update --prefer-dist --no-interaction
+
+      - name: Execute Rollbar tests
+        run: composer test
+
       - name: Create Laravel test app
         run: composer create-project laravel/laravel rollbar-test-app ${{ matrix.laravel }}
 
