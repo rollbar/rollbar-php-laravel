@@ -54,14 +54,18 @@ class RollbarServiceProvider extends ServiceProvider
      *
      * This is where we can start listening for events.
      *
-     * @param RollbarLogger $logger This parameter is injected by the service container, and is required to ensure that
-     *                              the Rollbar logger is initialized.
      * @return void
      *
      * @since 8.1.0
      */
-    public function boot(RollbarLogger $logger): void
+    public function boot(): void
     {
+        if ($this->stop() === true) {
+            return;
+        }
+
+        //ensure that the Rollbar logger is initialized
+        app(RollbarLogger::class);
         // Set up telemetry if it is enabled.
         if (null !== Rollbar::getTelemeter()) {
             $this->setupTelemetry($this->getConfigs($this->app));
