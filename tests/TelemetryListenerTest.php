@@ -49,7 +49,7 @@ class TelemetryListenerTest extends TestCase
 
         self::assertSame(EventLevel::Debug, $lastItem->level);
         self::assertSame('telemetry test message', $lastItem->body->message);
-        self::assertSame(['foo' => 'bar'], $lastItem->body->extra);
+        self::assertSame(['context' => ['foo' => 'bar']], $lastItem->body->extra);
     }
 
     public function testTelemetryDoesNotCaptureLaravelLogsWhenDisabled(): void
