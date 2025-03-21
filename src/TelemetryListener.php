@@ -105,10 +105,10 @@ class TelemetryListener
             EventType::Log,
             // Telemetry does not support all PSR-3 or RFC-5424 levels, so we need to convert them.
             Telemeter::getLevelFromPsrLevel($message->level),
-            array_merge(
-                $message->context,
-                ['message' => $message->message],
-            ),
+            [
+                'message' => $message->message,
+                'context' => $message->context,
+            ],
         );
     }
 
