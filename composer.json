@@ -24,7 +24,7 @@
     "require": {
         "php": "^8.1",
         "illuminate/support": "^10.0|^11.0|^12.0",
-        "rollbar/rollbar": "v4.1.0"
+        "rollbar/rollbar": "v4.1.1"
     },
     "require-dev": {
         "orchestra/testbench": "^8.0",
