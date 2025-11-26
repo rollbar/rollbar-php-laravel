@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu]
-        php: [8.4, 8.3, 8.2, 8.1]
+        php: [8.5 8.4, 8.3, 8.2, 8.1]
         laravel: [dev-master, 11.x, 10.x]
 
         exclude:
