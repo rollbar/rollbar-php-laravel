@@ -59,6 +59,8 @@ Tests are in `tests`.
 * To run the tests: `composer test`
 * To fix code style issues: `composer fix`
 
+**Note:** The test suite uses [Orchestra Testbench](https://github.com/orchestral/testbench), which resolves the Laravel version based on your installed PHP. To reproduce Laravel 13-specific failures locally you need **PHP 8.3 or higher** — PHP 8.1/8.2 will resolve to Testbench 9/10 (Laravel 11/12) and will not exercise the Laravel 13 container. The full Laravel 13 integration is verified by CI, which runs the real Laravel install against PHP 8.3+.
+
 ## Docker
 Docker binaries are located in `./bin` and can be run by simply executing `bin/phpunit` for example.
 * To run tests: `bin/phpunit`
