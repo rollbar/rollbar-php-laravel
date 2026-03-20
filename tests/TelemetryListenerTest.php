@@ -11,7 +11,7 @@ use Illuminate\Routing\Route;
 use Rollbar\Rollbar;
 use Rollbar\Telemetry\EventLevel;
 
-class TelemetryListenerTest extends TestCase
+class TelemetryListenerTest extends AbstractTestCase
 {
     protected function setUp(): void
     {

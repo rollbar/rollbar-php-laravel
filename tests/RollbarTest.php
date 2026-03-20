@@ -6,7 +6,7 @@ use Rollbar\Laravel\MonologHandler;
 use Rollbar\Laravel\AgentHandler;
 use Rollbar\RollbarLogger;
 
-class RollbarTest extends TestCase
+class RollbarTest extends AbstractTestCase
 {
     public function testBinding()
     {
