@@ -6,7 +6,7 @@ use Illuminate\Foundation\Application;
 use Mockery;
 use Rollbar\Laravel\RollbarServiceProvider;
 
-abstract class TestCase extends \Orchestra\Testbench\TestCase
+abstract class AbstractTestCase extends \Orchestra\Testbench\TestCase
 {
     protected string $access_token = 'B42nHP04s06ov18Dv8X7VI4nVUs6w04X';
 

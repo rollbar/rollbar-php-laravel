@@ -2,11 +2,19 @@
 
 namespace Rollbar\Laravel\Tests;
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
 use Rollbar\Laravel\MonologHandler;
 use Rollbar\Laravel\AgentHandler;
+use Rollbar\Laravel\RollbarServiceProvider;
+use Rollbar\Laravel\TelemetryListener;
 use Rollbar\RollbarLogger;
 
-class RollbarTest extends TestCase
+#[UsesClass(AgentHandler::class)]
+#[UsesClass(MonologHandler::class)]
+#[UsesClass(TelemetryListener::class)]
+#[CoversClass(RollbarServiceProvider::class)]
+class RollbarTest extends AbstractTestCase
 {
     public function testBinding()
     {

@@ -3,4 +3,4 @@ composer.lock
 .DS_Store
 .idea
 .vscode
-.phpunit.result.cache
+.phpunit.cache

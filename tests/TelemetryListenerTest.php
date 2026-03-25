@@ -8,10 +8,16 @@ use Illuminate\Http\Request;
 use Illuminate\Log\Events\MessageLogged;
 use Illuminate\Routing\Events\RouteMatched;
 use Illuminate\Routing\Route;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\UsesClass;
+use Rollbar\Laravel\RollbarServiceProvider;
+use Rollbar\Laravel\TelemetryListener;
 use Rollbar\Rollbar;
 use Rollbar\Telemetry\EventLevel;
 
-class TelemetryListenerTest extends TestCase
+#[UsesClass(RollbarServiceProvider::class)]
+#[CoversClass(TelemetryListener::class)]
+class TelemetryListenerTest extends AbstractTestCase
 {
     protected function setUp(): void
     {
